@@ -1,3 +1,7 @@
+import bpy
+import mathutils
+import math
+
 bl_info = {
 			"name": "Easy Lattice (temporary update)",
 			"author": "Kursad Karatas, Adam Wolski, Dr. Butts",
@@ -10,9 +14,7 @@ bl_info = {
 			"category": "Mesh"
 }
 
-import bpy
-import mathutils
-import math
+
 
 MODIFIER_NAME = "easy_lattice_tmp"
 LATTICE_OBJECT_NAME = "EasyLatticeTemp"
@@ -46,11 +48,10 @@ def create_lattice(obj, size, pos, props):
 	loc, rot, scl = obj.matrix_world.decompose()
 	ob.rotation_euler = rot.to_euler()
 
-	#ob.show_x_ray = True
+	# toggle xray on
+	bpy.context.space_data.shading.show_xray = True
 
 	# Link object to scene
-
-	#scn = bpy.context.scene.collection
 	bpy.context.scene.collection.objects.link(ob)
 	bpy.context.view_layer.objects.active = ob
 	bpy.context.view_layer.update()
@@ -86,6 +87,7 @@ def find_bbox(obj, selected_verts):
 
 	min_x, min_y, min_z = selected_verts[0].co
 	max_x, max_y, max_z = selected_verts[0].co
+
 
 	for c in range(len(selected_verts)):
 		co = selected_verts[c].co
@@ -262,7 +264,7 @@ class EasyLattice(bpy.types.Operator):
 				self.lat_interpolation))
 		return {'FINISHED'}
 
-#show dialog
+	# show dialog
 	def invoke(self, context, event):
 		# Don't show dialog if we have lattice selected.
 		# We'll just apply modifiers and delete it.
