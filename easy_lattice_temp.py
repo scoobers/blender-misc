@@ -25,7 +25,7 @@ def lattice_delete(obj):
 	bpy.ops.object.select_all(action='DESELECT')
 	for ob in bpy.context.scene.objects:
 		if LATTICE_OBJECT_NAME in ob.name:
-			ob.select_set(state = False)
+			ob.select_set(state = True)
 	bpy.ops.object.delete(use_global = False)
 
 	# select the original object back
