@@ -146,8 +146,9 @@ def easy_lattice(lattice_properties):
 
 		# check for selected vertices; select all vertices if no selection found
 		# pretty awkward; please clean up if you know a better way
-		vertCount = len(current_object.data.vertices)
+		bpy.ops.object.mode_set(mode='OBJECT')
 		selFlag = False
+		vertCount = len(current_object.data.vertices)
 		vertSelCounter = 0;
 
 		for vertSel in current_object.data.vertices:
