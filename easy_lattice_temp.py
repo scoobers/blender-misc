@@ -22,14 +22,17 @@ VERTEX_GROUP_NAME = "easy_lattice_vg"
 
 
 def lattice_delete(obj):
+	meshFlag = False;
+	if obj.type == "MESH": meshFlag = True;
+
 	bpy.ops.object.select_all(action='DESELECT')
 	for ob in bpy.context.scene.objects:
 		if LATTICE_OBJECT_NAME in ob.name:
 			ob.select_set(state = True)
 	bpy.ops.object.delete(use_global = False)
 
-	# select the original object back
-	obj.select_set(state = True)
+	# if obj = mesh, select the original object back
+	if meshFlag == True: obj.select_set(state = True)
 
 
 def create_lattice(obj, size, pos, props):
@@ -145,7 +148,6 @@ def easy_lattice(lattice_properties):
 		# pretty awkward; please clean up if you know a better way
 		vertCount = len(current_object.data.vertices)
 		selFlag = False
-
 		vertSelCounter = 0;
 
 		for vertSel in current_object.data.vertices:
