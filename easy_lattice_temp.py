@@ -1,7 +1,3 @@
-import bpy
-import mathutils
-import math
-
 bl_info = {
 			"name": "Easy Lattice (temporary update)",
 			"author": "Kursad Karatas, Adam Wolski, Dr. Butts",
@@ -14,7 +10,9 @@ bl_info = {
 			"category": "Mesh"
 }
 
-
+import bpy
+import mathutils
+import math
 
 MODIFIER_NAME = "easy_lattice_tmp"
 LATTICE_OBJECT_NAME = "EasyLatticeTemp"
