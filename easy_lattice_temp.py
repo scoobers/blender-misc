@@ -7,7 +7,7 @@ bl_info = {
 			"author": "Kursad Karatas, Adam Wolski, Dr. Butts",
 			"version": ( 0, 6, 1),
 			"blender": ( 2, 80, 0 ),
-			"location": "Mesh edit mode > RMB-click context menu > Easy Lattice",
+			"location": "Object / mesh RMB-click context menu > Easy Lattice",
 			"description": "Create a lattice for shape editing",
 			"warning": "",
 			"tracker_url": "",
@@ -88,7 +88,6 @@ def find_bbox(obj, selected_verts):
 	min_x, min_y, min_z = selected_verts[0].co
 	max_x, max_y, max_z = selected_verts[0].co
 
-
 	for c in range(len(selected_verts)):
 		co = selected_verts[c].co
 
@@ -142,6 +141,24 @@ def easy_lattice(lattice_properties):
 			name="current_lattice_object", default="")
 		bpy.types.Scene.active_lattice_object = current_object.name
 
+		# check for selected vertices; select all vertices if no selection found
+		# pretty awkward; please clean up if you know a better way
+		vertCount = len(current_object.data.vertices)
+		selFlag = False
+
+		vertSelCounter = 0;
+
+		for vertSel in current_object.data.vertices:
+			if vertSel.select == True:
+				selFlag = True
+				vertSelCounter += 1;
+
+		if vertSelCounter == vertCount or selFlag == False:
+			bpy.ops.object.mode_set(mode='EDIT')
+			bpy.ops.mesh.select_all(action='SELECT')
+
+
+		# toggle out of edit mode
 		if current_object.mode == "EDIT":
 			bpy.ops.object.editmode_toggle()
 
@@ -153,7 +170,7 @@ def easy_lattice(lattice_properties):
 						bpy.ops.object.modifier_apply(
 							apply_as='DATA', modifier=mod.name)
 				except:
-					pass
+					bpy.ops.object.modifier_remove(modifier=MODIFIER_NAME)
 
 		# Delete vertex group we were using on last lattice
 		delete_group(current_object)
@@ -163,6 +180,7 @@ def easy_lattice(lattice_properties):
 
 		# And add selected vertices to it
 		selected_verts = []
+
 		for vert in current_object.data.vertices:
 			if vert.select:
 				selected_verts.append(vert)
@@ -222,7 +240,6 @@ class EasyLattice(bpy.types.Operator):
 	bl_label = "Easy Lattice"
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "UI"
-	#bl_category = "View"
 
 	lat_u: bpy.props.IntProperty(name="Lattice u", default=2)
 	lat_v: bpy.props.IntProperty(name="Lattice v", default=2)
@@ -264,7 +281,7 @@ class EasyLattice(bpy.types.Operator):
 				self.lat_interpolation))
 		return {'FINISHED'}
 
-	# show dialog
+	# show dialog / prompt
 	def invoke(self, context, event):
 		# Don't show dialog if we have lattice selected.
 		# We'll just apply modifiers and delete it.
@@ -276,15 +293,17 @@ class EasyLattice(bpy.types.Operator):
 
 def menu_draw(self, context):
 	self.layout.separator()
-	self.layout.operator_context = 'INVOKE_DEFAULT' #or 'INVOKE_REGION_WIN'
+	self.layout.operator_context = 'INVOKE_DEFAULT'
 	self.layout.operator('object.easy_lattice')
 
 def register():
 	bpy.utils.register_class(EasyLattice)
+	bpy.types.VIEW3D_MT_object_context_menu.append(menu_draw)
 	bpy.types.VIEW3D_MT_edit_mesh_context_menu.append(menu_draw)
 
 def unregister():
 	bpy.utils.unregister_class(EasyLattice)
+	bpy.types.VIEW3D_MT_object_context_menu.remove(menu_draw)
 	bpy.types.VIEW3D_MT_edit_mesh_context_menu.remove(menu_draw)
 
 if __name__ == "__main__":
